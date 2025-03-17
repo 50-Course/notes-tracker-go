@@ -16,9 +16,9 @@ import (
 	"github.com/uptrace/bun/extra/bundebug"
 )
 
-var testDB *bun.DB
+// var testDB *bun.DB
 
-func testMain(m *testing.M) {
+func setupTestDB() *bun.DB {
 	dsn := os.Getenv("DATABASE_URL")
 	// if this is not set we should just default to some test db running locally for now
 	if dsn == "" {
@@ -38,15 +38,17 @@ func testMain(m *testing.M) {
 	_, _ = testDB.NewCreateTable().Model((*models.Task)(nil)).IfNotExists().Exec(context.Background())
 
 	// run the tests
-	m.Run()
+	// m.Run()
 
-	// teardown
-	_ = testDB.Close()
+	// teardown our test data
+	// _ = testDB.Close()
 
-	os.Exit(m.Run())
+	// os.Exit(m.Run())
+	return testDB
 }
 
 func TestTaskRepository(t *testing.T) {
+	testDB := setupTestDB()
 	repo := NewTaskRepository(testDB)
 
 	t.Run("Create a new Task Item", func(t *testing.T) {
