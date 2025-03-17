@@ -16,8 +16,6 @@ import (
 	"github.com/uptrace/bun/extra/bundebug"
 )
 
-// var testDB *bun.DB
-
 func setupTestDB() *bun.DB {
 	dsn := os.Getenv("DATABASE_URL")
 	// if this is not set we should just default to some test db running locally for now
