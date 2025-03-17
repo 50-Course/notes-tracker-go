@@ -29,10 +29,16 @@ func (r *TaskRepository) GetTask(ctx context.Context, id string) (*models.Task, 
 	return task, nil
 }
 
-// func (r *TaskRepository) UpdateTask(ctx context.Context, task *models.Task) error {
-// 	_, err := r.db.NewUpdate().Model(task).Where("id = ?", task.ID).Exec(ctx)
-// 	return err
-// }
+func (r *TaskRepository) ListTasks(ctx context.Context) ([]*models.Task, error) {
+	var tasks []*models.Task
+	err := r.db.NewSelect().Model(&tasks).Scan(ctx)
+	return tasks, err
+}
+
+func (r *TaskRepository) UpdateTask(ctx context.Context, task *models.Task) error {
+	_, err := r.db.NewUpdate().Model(task).Where("id = ?", task.ID).Exec(ctx)
+	return err
+}
 
 func (r *TaskRepository) DeleteTask(ctx context.Context, id string) error {
 	_, err := r.db.NewDelete().Model((*models.Task)(nil)).Where("id = ?", id).Exec(ctx)
