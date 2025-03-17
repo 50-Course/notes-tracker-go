@@ -1,0 +1,65 @@
+syntax = 'proto3'
+
+package api;
+
+option go_package = "github.com/50-Course/notes-tracker/api";
+
+// Message definitions for our Task API
+//
+// Task represents a task in our system with a title, description, and timestamps
+message Task  {
+  String id = 1;
+  String title = 2;
+  String description = 3;
+  String created_at = 4;
+  String updated_at = 5;
+}
+
+message CreateTaskRequest {
+    string title = 1;
+    string description = 2;
+}
+
+message CreateTaskResponse {
+    Task task = 1;
+}
+
+message GetTaskRequest {
+    string id = 1;
+}
+
+message GetTaskResponse {
+    Task task = 1;
+}
+
+message ListTasksRequest {}
+
+message ListTasksResponse {
+    repeated Task tasks = 1;
+}
+
+message UpdateTaskRequest {
+    string id = 1;
+    string title = 2;
+    string description = 3;
+}
+
+message UpdateTaskResponse {
+    Task task = 1;
+}
+
+message DeleteTaskRequest {
+    string id = 1;
+}
+
+message DeleteTaskResponse {
+  bool success = 1;
+}
+
+message TaskService {
+  rpc CreateTask(CreateTaskRequest) returns (CreateTaskResponse);
+  rpc GetTask(GetTaskRequest) returns (GetTaskResponse);
+  rpc ListTasks(ListTasksRequest) returns (ListTasksResponse);
+  rpc UpdateTask(UpdateTaskRequest) returns (Task);
+  rpc DeleteTask(DeleteTaskRequest) returns (DeleteTaskResponse);
+}

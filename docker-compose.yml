@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: samba_db
+    restart: unless-stopped
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-notes_db}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-notes_db_test}
+    volumes:
+      - ./samba_db_data:/var/lib/postgresql/data:rw
+
+volumes:
+  samba_db_data:
