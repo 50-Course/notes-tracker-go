@@ -1,0 +1,19 @@
+package models
+
+import (
+	"time"
+
+	"github.com/uptrace/bun"
+)
+
+// Represents a Todo Item; effectively a task or an action
+// triaged to be done by us later
+type Task struct {
+	bun.BaseModel `bun:"table:tasks,alias:t"`
+
+	ID          string    `bun:"id,pk,autoincrement"`
+	Title       string    `bun:"title,notnull"`
+	Description string    `bun:"description"`
+	CreatedAt   time.Time `bun:"created_at,nullzero,notnull,default:current_timestamp"`
+	UpdatedAt   bun.NullTime
+}
