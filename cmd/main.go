@@ -8,6 +8,7 @@ import (
 	_ "net"
 	"os"
 
+	_ "github.com/lib/pq"
 	grpcserver "github.com/50-Course/notes-tracker/cmd/grpc"
 	"github.com/50-Course/notes-tracker/cmd/repository"
 	_ "github.com/50-Course/notes-tracker/shared/proto"
@@ -47,15 +48,7 @@ func main() {
 	}
 
 	// we would then initialize our grpc server here
-	// server := grpc.NewServer()
 	repo := repository.NewTaskRepository(db)
 	grpcserver.RunGRPCServer(repo, internalServerPort)
-
-	// api.RegisterTaskServiceServer(server, &grpcserver.TaskServerServer{repo: repo})
-
 	log.Printf("gRPC Server started on port %s", internalServerPort)
-
-	if err := server.Serve(listner); err != nil {
-		log.Fatalf("Failed to start server on %s", err)
-	}
 }
