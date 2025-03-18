@@ -11,9 +11,7 @@
 
 ```mermaid
 graph LR
-    API_Gateway[API Gateway (HTTP Server)] -->|REST| BunRouter(BunRouter api/gateway/server.go);
-    BunRouter -->|gRPC| Internal_Service[Internal Service (gRPC Server)];
-    Internal_Service -->|ORM| PostgreSQL[PostgreSQL (Bun ORM)];
+    A[API Gateway] -->|REST| B[Service];
 ```
 
 ## Installation
