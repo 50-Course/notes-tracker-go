@@ -54,7 +54,6 @@ func TestTaskRepository(t *testing.T) {
 			ID:          "test-uuid-4",
 			Title:       "Test Task",
 			Description: "Although Optional, this is to contain some very long words, :eyes:",
-			CreatedAt:   time.Now(),
 		}
 
 		err := repo.CreateTask(context.Background(), task)
@@ -78,8 +77,43 @@ func TestTaskRepository(t *testing.T) {
 		}
 	})
 
+	t.Run("Get Task By ID", func(t *testing.T) {
+		task := &models.Task{
+			Title:       "Fetch a Test Task",
+			Description: "This task will be fetched",
+		}
+		_ = repo.CreateTask(context.Background(), task)
+
+		fetchedTask, err := repo.GetTask(context.Background(), task.ID)
+		if err != nil {
+			t.Errorf("Single fetch operation failed: %v", err)
+		}
+		if fetchedTask.ID != task.ID {
+			t.Errorf("Expected ID %v, got %v", task.ID, fetchedTask.ID)
+		}
+		if fetchedTask.Title != task.Title {
+			t.Errorf("Expected Title %v, got %v", task.Title, fetchedTask.Title)
+		}
+	})
+
+	t.Run("List Tasks", func(t *testing.T) {
+		tasks, err := repo.ListTasks(context.Background())
+		if err != nil {
+			t.Errorf("Batch fetch operation failed: %v", err)
+		}
+		if len(tasks) == 0 {
+			t.Errorf("Expected at least one task, but got 0")
+		}
+	})
+
 	t.Run("Delete a Task", func(t *testing.T) {
-		err := repo.DeleteTask(context.Background(), "test-uuid-4")
+		task := &models.Task{
+			Title:       "Delete me later",
+			Description: "I am a task that will be deleted later",
+		}
+
+		_ = repo.CreateTask(context.Background(), task)
+		err := repo.DeleteTask(context.Background(), task.ID)
 		if err != nil {
 			t.Fatalf("Failed to delete task: %v", err)
 		}
@@ -87,6 +121,37 @@ func TestTaskRepository(t *testing.T) {
 		_, err = repo.GetTask(context.Background(), "test-uuid-4")
 		if err == nil {
 			t.Errorf("Expected task to be deleted, but it still exists")
+		}
+	})
+
+	t.Run("Update Task", func(t *testing.T) {
+		task := &models.Task{
+			Title:       "Test Task",
+			Description: "Commentary before update",
+		}
+
+		_ = repo.CreateTask(context.Background(), task)
+
+		task.Title = "Updated Task"
+		task.Description = "Post-Update Commentary. Have a great day"
+
+		err := repo.UpdateTask(context.Background(), task)
+		if err != nil {
+			t.Errorf("Failed to update task: %v", err)
+		}
+
+		// recheck if the task was truly updated
+		updateTask, err := repo.GetTask(context.Background(), task.ID)
+		if err != nil {
+			t.Fatalf("Failed to get updated task: %v", err)
+		}
+
+		if updateTask.Title != "Updated Task" {
+			t.Errorf("Expected task title to be 'Updated Task', got %s", updateTask.Title)
+		}
+
+		if updateTask.Description != "Post-Update Commentary. Have a great day" {
+			t.Errorf("Operation Failed: Description was not updated. Expected, %s, got %s", updateTask.Description)
 		}
 	})
 }
