@@ -49,6 +49,8 @@ graph TD;
 
 This application is fully containerized, however, we have provided a `Makefile` to make usability easier, be it development or just exploring.
 
+To get started, you are required to first set your environment variables in the `.env` file. You can copy the `.env.template` file and rename it to `.env` (please, keep it within the `config/` folder) and fill in the required fields.
+
 Below are the commands you can use to interact with the application:
 
 - To hit the ground running, you can use the following command to start the application:
