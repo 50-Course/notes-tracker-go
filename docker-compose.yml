@@ -2,14 +2,36 @@ services:
   db:
     image: postgres:17-alpine
     container_name: samba_db
-    restart: unless-stopped
+    restart: always
     ports:
       - 5432:5432
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER:-notes_db}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-notes_db_test}
+    env_file:
+      - config/.env
     volumes:
-      - ./samba_db_data:/var/lib/postgresql/data:rw
+      - ./pg_data:/var/lib/postgresql/data:rw
+
+  # INTERNAL SERVICE
+  core:
+    build:
+      context: cmd
+      dockerfile: Dockerfile
+    container_name: samba_core
+    env_file:
+      - config/.env
+    depends_on:
+      - db
+
+  gateway:
+    build:
+      context: api
+      dockerfile: Dockerfile
+    container_name: samba_gateway
+    env_file:
+      - config/.env
+    depends_on:
+      - core
+    ports:
+      - 8080:8080
 
 volumes:
-  samba_db_data:
+  pg_data:
