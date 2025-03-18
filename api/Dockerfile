@@ -4,18 +4,20 @@ FROM golang:latest AS builder
 
 WORKDIR /app
 
-# COPY go.mod go.sum ./
 COPY . .
+COPY ./config/.env /app/config/.env
 RUN go mod tidy
 
 
 RUN go build -o api_gateway ./api/gateway/server.go
 
-FROM alpine:latest
+FROM ubuntu:22.04
 WORKDIR /root/
 COPY --from=builder /app/api_gateway .
+COPY --from=builder /app/config/.env /root/config/.env
+RUN chmod +x /root/api_gateway
 
 EXPOSE 8080
 
-CMD ["sh","-c", "./api_gateway"]
+CMD ["./api_gateway"]
 
