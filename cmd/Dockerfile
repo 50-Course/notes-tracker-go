@@ -1,12 +1,21 @@
-FROM golang:1.21 AS builder
+FROM golang:latest AS builder
 
 WORKDIR /app
-COPY . .
 
-RUN go mod tidy && go build -o internal_service ./cmd/internal_service
+COPY . .
+RUN go mod tidy
+
+RUN go build -o grpc_service ./cmd/main.go
+
+# RUN go build -o api_gateway ./api/gateway/server.go
 
 FROM alpine:latest
-WORKDIR /root/
-COPY --from=builder /app/internal_service .
 
-CMD ["./internal_service"]
+WORKDIR /root/
+
+COPY --from=builder /app/grpc_service .
+# COPY --from=builder /app/api_gateway .
+
+EXPOSE 50051
+
+CMD ["sh", "-c", "./grpc_service"]
