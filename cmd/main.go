@@ -2,23 +2,24 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
-	_ "fmt"
+	 "fmt"
 	"log"
 	_ "net"
 	"os"
 
-	_ "github.com/lib/pq"
 	grpcserver "github.com/50-Course/notes-tracker/cmd/grpc"
 	"github.com/50-Course/notes-tracker/cmd/repository"
 	_ "github.com/50-Course/notes-tracker/shared/proto"
 	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
+	_ "github.com/uptrace/bun/driver/pgdriver"
 )
 
 func connectToDB(dbUrl string) (*bun.DB, error) {
-	db, err := sql.Open("pg", dbUrl)
+	log.Println("Connecting to database with URL:", dbUrl)
+	db, err := sql.Open("postgres", dbUrl)
 	if err != nil {
 		return nil, fmt.Errorf("Error connecting to database: %v", err)
 	}
