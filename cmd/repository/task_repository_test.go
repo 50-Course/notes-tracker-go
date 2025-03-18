@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 	"testing"
-	"time"
+	_ "time"
 
 	"github.com/50-Course/notes-tracker/shared/models"
 	_ "github.com/lib/pq"
@@ -28,12 +28,19 @@ func setupTestDB() *bun.DB {
 	sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dsn)))
 	testDB := bun.NewDB(sqldb, pgdialect.New())
 
+	if err := testDB.Ping(); err != nil {
+		log.Fatalf("Database Connection Error: Cannot connect to database: %v", err)
+	}
+
 	// we all love fancy debug logic in debugging/tests
 	testDB.AddQueryHook(bundebug.NewQueryHook(bundebug.WithVerbose(true)))
 
 	// apply migrations
 	_, _ = testDB.NewDropTable().Model((*models.Task)(nil)).IfExists().IfExists().Cascade().Exec(context.Background())
-	_, _ = testDB.NewCreateTable().Model((*models.Task)(nil)).IfNotExists().Exec(context.Background())
+	_, err := testDB.NewCreateTable().Model((*models.Task)(nil)).IfNotExists().Exec(context.Background())
+	if err != nil {
+		log.Fatalf("Database Integrity Error: Unable to apply migrations: %v", err)
+	}
 
 	// run the tests
 	// m.Run()
@@ -151,7 +158,7 @@ func TestTaskRepository(t *testing.T) {
 		}
 
 		if updateTask.Description != "Post-Update Commentary. Have a great day" {
-			t.Errorf("Operation Failed: Description was not updated. Expected, %s, got %s", updateTask.Description)
+			t.Error("Operation Failed: Description was not updated. Expected")
 		}
 	})
 }
