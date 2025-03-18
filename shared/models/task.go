@@ -11,10 +11,10 @@ import (
 type Task struct {
 	bun.BaseModel `bun:"table:tasks,alias:t"`
 
-	ID          string    `bun:",pk,type:uuid,default:gen_random_uuid()"`
-	Title       string    `bun:"title,notnull"`
-	Description string    `bun:"description"`
-	CreatedAt   time.Time `bun:"created_at,nullzero,notnull,default:current_timestamp"`
+	ID          string `bun:",pk,type:uuid,default:gen_random_uuid()"`
+	Title       string `bun:",notnull"`
+	Description string
+	CreatedAt   time.Time `bun:",default:current_timestamp"`
 	UpdatedAt   bun.NullTime
 }
 
