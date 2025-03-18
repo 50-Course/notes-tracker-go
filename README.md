@@ -20,7 +20,7 @@ graph TD;
     end
 
     subgraph "Internal Service (gRPC Server)"
-        gRPCServer["gRPC Server (TaskService)"]
+        gRPCServer["gRPC Server"]
     end
 
     subgraph "Database Layer"
