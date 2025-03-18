@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/50-Course/notes-tracker/shared/models"
+	"github.com/google/uuid"
 	"github.com/uptrace/bun"
 )
 
@@ -16,6 +17,7 @@ func NewTaskRepository(db *bun.DB) *TaskRepository {
 }
 
 func (r *TaskRepository) CreateTask(ctx context.Context, task *models.Task) error {
+	task.ID = uuid.New().String()
 	_, err := r.db.NewInsert().Model(task).Exec(ctx)
 	return err
 }
