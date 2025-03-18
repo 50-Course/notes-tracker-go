@@ -341,7 +341,7 @@ func NewServer(gateway *Gateway) *bunrouter.Router {
 		return bunrouter.JSON(w, map[string]string{"message": "Hello, World!"})
 	})
 
-	router.WithGroup("/tasks", func(r *bunrouter.Group) {
+	router.WithGroup("/api/v1/tasks", func(r *bunrouter.Group) {
 		r.GET("", gateway.ListTasksHandler)
 		r.POST("", gateway.CreateTaskHandler)
 		r.GET("/:id", gateway.GetTaskHandler)
