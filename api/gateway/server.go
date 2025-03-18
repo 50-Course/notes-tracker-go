@@ -9,6 +9,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/joho/godotenv"
 	"github.com/uptrace/bunrouter"
 	"google.golang.org/grpc"
 
@@ -298,6 +299,10 @@ func NewServer(gateway *Gateway) *bunrouter.Router {
 }
 
 func main() {
+	if err := godotenv.Load("config/.env"); err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	grpcAddress, addrExists := os.LookupEnv("INTERNAL_SERVER_ADDRESS")
 	gatewayPort, portExists := os.LookupEnv("API_GATEWAY_PORT")
 
