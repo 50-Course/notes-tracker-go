@@ -7,13 +7,13 @@
 - Fully containerized using Docker
 - And, Bootstrapped using Docker Compose
 
-### System Architecture
+## System Architecture
 
 ```mermaid
-graph TD
-    A[API Gateway (HTTP Server)] -->|"REST"| B(BunRouter api/gateway/server.go);
-    B -->|"gRPC"| C[Internal Service (gRPC Server)];
-    C -->|"ORM"| D[PostgreSQL (Bun ORM)];
+graph LR
+    API_Gateway[API Gateway (HTTP Server)] -->|REST| BunRouter(BunRouter api/gateway/server.go);
+    BunRouter -->|gRPC| Internal_Service[Internal Service (gRPC Server)];
+    Internal_Service -->|ORM| PostgreSQL[PostgreSQL (Bun ORM)];
 ```
 
 ## Installation
