@@ -8,13 +8,13 @@ services:
     env_file:
       - config/.env
     volumes:
-      - ./pg_data:/var/lib/postgresql/data:rw
+      - samba_db_data:/var/lib/postgresql/data
 
   # INTERNAL SERVICE
   core:
     build:
-      context: cmd
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./cmd/Dockerfile
     container_name: samba_core
     env_file:
       - config/.env
@@ -23,8 +23,8 @@ services:
 
   gateway:
     build:
-      context: api
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./api/Dockerfile
     container_name: samba_gateway
     env_file:
       - config/.env
@@ -34,4 +34,4 @@ services:
       - 8080:8080
 
 volumes:
-  pg_data:
+  samba_db_data:
