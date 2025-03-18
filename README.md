@@ -10,9 +10,38 @@
 ## System Architecture
 
 ```mermaid
-graph LR
-    A[API Gateway] -->|REST| B[Service];
+graph TD;
+    subgraph "Client"
+        User
+    end
+
+    subgraph "API Gateway (BunRouter)"
+        GatewayServer["API Gateway (BunRouter)"]
+    end
+
+    subgraph "Internal Service (gRPC Server)"
+        gRPCServer["gRPC Server (TaskService)"]
+    end
+
+    subgraph "Database Layer"
+        PostgreSQL["PostgreSQL (Bun ORM)"]
+    end
+
+    %% Arrows (Flow of Communication)
+    User -->|REST API| GatewayServer
+    GatewayServer -->|gRPC Call| gRPCServer
+    gRPCServer -->|Database Queries| PostgreSQL
+    PostgreSQL -->|Data Response| gRPCServer
+    gRPCServer -->|gRPC Response| GatewayServer
+    GatewayServer -->|HTTP Response| User
 ```
+
+### **How It Works:**
+
+- **User** makes HTTP requests to the **API Gateway**.
+- **API Gateway** translates requests into **gRPC** calls to the **Internal Service**.
+- **Internal Service** communicates with **PostgreSQL** using **Bun ORM**.
+- Responses flow back **through the same pipeline** to the user.
 
 ## Installation
 
