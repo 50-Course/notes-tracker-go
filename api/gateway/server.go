@@ -13,6 +13,7 @@ import (
 	"github.com/uptrace/bunrouter"
 	"google.golang.org/grpc"
 
+	_ "github.com/50-Course/notes-tracker/docs"
 	api "github.com/50-Course/notes-tracker/shared/proto"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
@@ -58,6 +59,16 @@ func NewGateway(grpcAddress string) (*Gateway, error) {
 //	Request: GET /tasks
 //	Response (Success): 200 OK, JSON: {"tasks": [...]}
 //	Response (Error):   500 Internal Server Error, JSON: {"error": "Failed to list tasks", "error_message": "grpc: ..."}
+//
+// ListTasks godoc
+//
+//	@Summary		List all tasks
+//	@Description	Fetches all tasks from the database
+//	@Tags			tasks
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{array}	models.Task
+//	@Router			/tasks [get]
 func (g *Gateway) ListTasksHandler(w http.ResponseWriter, req bunrouter.Request) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -96,6 +107,18 @@ func (g *Gateway) ListTasksHandler(w http.ResponseWriter, req bunrouter.Request)
 //	Body: {"title": "Task 1", "description": "Description 1"}
 //	Response (Success): 201 Created, JSON: {"task": {...}}
 //	Response (Error):   500 Internal Server Error, JSON: {"error": "Failed to create task", "error_message": "grpc: ..."}
+
+// CreateTask godoc
+//
+//	@Summary		Create a new task
+//	@Description	Creates a new task with title and description
+//	@Tags			tasks
+//	@Accept			json
+//	@Produce		json
+//	@Param			request	body		models.Task	true	"Task payload"
+//	@Success		201		{object}	models.Task
+//	@Failure		400		{object}	map[string]string
+//	@Router			/tasks [post]
 func (g *Gateway) CreateTaskHandler(w http.ResponseWriter, req bunrouter.Request) error {
 	// Serializer for the request body
 	var requestSerializer struct {
@@ -151,6 +174,17 @@ func (g *Gateway) CreateTaskHandler(w http.ResponseWriter, req bunrouter.Request
 //	Request: GET /tasks/1
 //	Response (Success): 200 OK, JSON: {"task": {...}}
 //	Response (Error):   500 Internal Server Error, JSON: {"error": "Failed to get task", "error_message": "grpc: ..."}
+//
+// GetTask godoc
+// @Summary		Get task by ID
+// @Description	Retrieves a single task by its ID
+// @Tags			tasks
+// @Accept			json
+// @Produce		json
+// @Param			id	path		string	true	"Task ID"
+// @Success		200	{object}	models.Task
+// @Failure		404	{object}	map[string]string
+// @Router			/tasks/{id} [get]
 func (g *Gateway) GetTaskHandler(w http.ResponseWriter, req bunrouter.Request) error {
 	id := req.Param("id")
 
@@ -184,6 +218,20 @@ func (g *Gateway) GetTaskHandler(w http.ResponseWriter, req bunrouter.Request) e
 //	  - If the gRPC call fails, it returns a 500 Internal Server Error with a JSON payload
 //	    containing an "error" and "error_message" field.
 //	  - If successful, it returns a 200 OK with a JSON payload containing the updated task.
+//
+// UpdateTask godoc
+//
+//	@Summary		Update a task
+//	@Description	Updates an existing task
+//	@Tags			tasks
+//	@Accept			json
+//	@Produce		json
+//	@Param			id		path		string		true	"Task ID"
+//	@Param			request	body		models.Task	true	"Updated Task Data"
+//	@Success		200		{object}	models.Task
+//	@Failure		400		{object}	map[string]string
+//	@Failure		404		{object}	map[string]string
+//	@Router			/tasks/{id} [put]
 func (g *Gateway) UpdateTaskHandler(w http.ResponseWriter, req bunrouter.Request) error {
 	id := req.Param("id")
 
@@ -235,6 +283,18 @@ func (g *Gateway) UpdateTaskHandler(w http.ResponseWriter, req bunrouter.Request
 //	  - If the gRPC call fails, it returns a 500 Internal Server Error with a JSON payload
 //	    containing an "error" and "error_message" field.
 //	  - If successful, it returns a 204 No Content response.
+//
+// DeleteTask godoc
+//
+//	@Summary		Delete a task
+//	@Description	Deletes a task by ID
+//	@Tags			tasks
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path	string	true	"Task ID"
+//	@Success		204
+//	@Failure		404	{object}	map[string]string
+//	@Router			/tasks/{id} [delete]
 func (g *Gateway) DeleteTaskHandler(w http.ResponseWriter, req bunrouter.Request) error {
 	taskID := req.Param("id")
 
@@ -258,17 +318,25 @@ func (g *Gateway) DeleteTaskHandler(w http.ResponseWriter, req bunrouter.Request
 
 // Initalizes a HTTP router with gRPC integration
 //
-// @title Notes Tracker API
-// @version 1
-// @description This is the API Gateway for the Notes Tracker, a simple task management application. handling HTTP requests and translating them to gRPC calls.
-// @contact.name 50-Course
-// @contact.url https://github.com/50-Course
-// @license MIT
-// @BasePath /api/v1
-// @schemes http
+//	@title			Notes Tracker API
+//	@version		1
+//	@description	This is the API Gateway for the Notes Tracker, a simple task management application. handling HTTP requests and translating them to gRPC calls.
+//	@contact.name	50-Course
+//	@contact.url	https://github.com/50-Course
+//	@license		MIT
+//	@BasePath		/api/v1
+//	@schemes		http
 func NewServer(gateway *Gateway) *bunrouter.Router {
 	router := bunrouter.New()
 
+	// Health Check Endpoint godoc
+	//	@Summary		Health check
+	//	@Description	Returns API health status
+	//	@Tags			health
+	//	@Accept			json
+	//	@Produce		json
+	//	@Success		200	{object}	map[string]string
+	//	@Router			/health [get]
 	router.GET("/health", func(w http.ResponseWriter, req bunrouter.Request) error {
 		return bunrouter.JSON(w, map[string]string{"message": "Hello, World!"})
 	})
@@ -288,7 +356,7 @@ func NewServer(gateway *Gateway) *bunrouter.Router {
 		return nil
 	})
 
-	router.GET("/swagger/*", func(w http.ResponseWriter, req bunrouter.Request) error {
+	router.GET("/swagger/*any", func(w http.ResponseWriter, req bunrouter.Request) error {
 		httpSwagger.Handler(
 			httpSwagger.URL("/swagger/doc.json"),
 		).ServeHTTP(w, req.Request)
