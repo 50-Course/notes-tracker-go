@@ -10,6 +10,7 @@
 ### System Architecture
 
 ```mermaid
+graph TD;
     A[API Gateway (HTTP Server)] -->|REST| B(BunRouter api/gateway/server.go);
     B -->|gRPC| C[Internal Service (gRPC Server)];
     C -->|ORM| D[PostgreSQL (Bun ORM)];
