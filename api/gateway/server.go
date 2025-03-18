@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -12,6 +13,7 @@ import (
 	"google.golang.org/grpc"
 
 	api "github.com/50-Course/notes-tracker/shared/proto"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 // Represents an API Gateway that will be used to route requests to the appropriate service
@@ -100,7 +102,7 @@ func (g *Gateway) CreateTaskHandler(w http.ResponseWriter, req bunrouter.Request
 		Description string `json:"description"`
 	}
 
-	if err := req.DecodeJSON(&requestSerializer); err != nil {
+	if err := json.NewDecoder(req.Body).Decode(&requestSerializer); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return bunrouter.JSON(w, bunrouter.H{
 			"error":         "Failed to create task",
@@ -189,7 +191,7 @@ func (g *Gateway) UpdateTaskHandler(w http.ResponseWriter, req bunrouter.Request
 		Description string `json:"description"`
 	}
 
-	if err := req.DecodeJSON(&updateRequestSerializer); err != nil {
+	if err := json.NewDecoder(req.Body).Decode(&updateRequestSerializer); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return bunrouter.JSON(w, bunrouter.H{
 			"error":         "Invalid request payload. Please review the request body and try again",
@@ -254,6 +256,15 @@ func (g *Gateway) DeleteTaskHandler(w http.ResponseWriter, req bunrouter.Request
 }
 
 // Initalizes a HTTP router with gRPC integration
+//
+// @title Notes Tracker API
+// @version 1
+// @description This is the API Gateway for the Notes Tracker, a simple task management application. handling HTTP requests and translating them to gRPC calls.
+// @contact.name 50-Course
+// @contact.url https://github.com/50-Course
+// @license MIT
+// @BasePath /api/v1
+// @schemes http
 func NewServer(gateway *Gateway) *bunrouter.Router {
 	router := bunrouter.New()
 
@@ -267,6 +278,20 @@ func NewServer(gateway *Gateway) *bunrouter.Router {
 		r.GET("/:id", gateway.GetTaskHandler)
 		r.PUT("/:id", gateway.UpdateTaskHandler)
 		r.DELETE("/:id", gateway.DeleteTaskHandler)
+	})
+
+	// OpenAPI documentation
+	// serve redoc by default
+	router.GET("/api/v1/docs", func(w http.ResponseWriter, req bunrouter.Request) error {
+		http.ServeFile(w, req.Request, "./docs/redoc.html")
+		return nil
+	})
+
+	router.GET("/swagger/*", func(w http.ResponseWriter, req bunrouter.Request) error {
+		httpSwagger.Handler(
+			httpSwagger.URL("/swagger/doc.json"),
+		).ServeHTTP(w, req.Request)
+		return nil
 	})
 
 	return router
