@@ -2,9 +2,14 @@ FROM golang:latest AS builder
 
 WORKDIR /app
 
-COPY . .
-COPY ./config/.env /app/config/.env
+# COPY . .
+COPY go.mod go.sum ./
+
 RUN go mod tidy
+
+COPY ./config/.env /app/config/.env
+
+COPY . .
 
 RUN go build -o grpc_service ./cmd/main.go
 

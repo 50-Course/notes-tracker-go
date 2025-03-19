@@ -1,8 +1,8 @@
 package main
 
 import (
-	"database/sql"
-	"fmt"
+	_ "database/sql"
+	_ "fmt"
 	"log"
 	_ "net"
 	"os"
@@ -10,42 +10,43 @@ import (
 	grpcserver "github.com/50-Course/notes-tracker/cmd/grpc"
 	"github.com/50-Course/notes-tracker/cmd/repository"
 	_ "github.com/50-Course/notes-tracker/shared/proto"
+	"github.com/50-Course/notes-tracker/shared/utils"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
-	"github.com/uptrace/bun"
-	"github.com/uptrace/bun/dialect/pgdialect"
+	_ "github.com/uptrace/bun"
+	_ "github.com/uptrace/bun/dialect/pgdialect"
 	_ "github.com/uptrace/bun/driver/pgdriver"
 )
 
-func buildDatabaseURL() string {
-	user := os.Getenv("POSTGRES_USER")
-	password := os.Getenv("POSTGRES_PASSWORD")
-	host := os.Getenv("POSTGRES_HOST")
-	port := os.Getenv("POSTGRES_PORT")
-	dbname := os.Getenv("POSTGRES_DB")
-
-	if user == "" || password == "" || host == "" || port == "" || dbname == "" {
-		log.Fatal("Missing required database environment variables")
-	}
-
-	return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", user, password, host, port, dbname)
-}
-
-func connectToDB(dbUrl string) (*bun.DB, error) {
-	log.Println("Connecting to database with URL:", dbUrl)
-	db, err := sql.Open("postgres", dbUrl)
-	if err != nil {
-		return nil, fmt.Errorf("Error connecting to database: %v", err)
-	}
-
-	// ping db to truely know if we are connecting to the databse
-	if err := db.Ping(); err != nil {
-		return nil, fmt.Errorf("Failed to connect to database: %v", err)
-	}
-
-	log.Println("Connected to database successfully")
-	return bun.NewDB(db, pgdialect.New()), nil
-}
+// func buildDatabaseURL() string {
+// 	user := os.Getenv("POSTGRES_USER")
+// 	password := os.Getenv("POSTGRES_PASSWORD")
+// 	host := os.Getenv("POSTGRES_HOST")
+// 	port := os.Getenv("POSTGRES_PORT")
+// 	dbname := os.Getenv("POSTGRES_DB")
+//
+// 	if user == "" || password == "" || host == "" || port == "" || dbname == "" {
+// 		log.Fatal("Missing required database environment variables")
+// 	}
+//
+// 	return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", user, password, host, port, dbname)
+// }
+//
+// func connectToDB(dbUrl string) (*bun.DB, error) {
+// 	log.Println("Connecting to database with URL:", dbUrl)
+// 	db, err := sql.Open("postgres", dbUrl)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("Error connecting to database: %v", err)
+// 	}
+//
+// 	// ping db to truely know if we are connecting to the databse
+// 	if err := db.Ping(); err != nil {
+// 		return nil, fmt.Errorf("Failed to connect to database: %v", err)
+// 	}
+//
+// 	log.Println("Connected to database successfully")
+// 	return bun.NewDB(db, pgdialect.New()), nil
+// }
 
 func main() {
 	if err := godotenv.Load("config/.env"); err != nil {
@@ -64,8 +65,8 @@ func main() {
 		internalServerPort = "50051"
 	}
 
-	dbUrl := buildDatabaseURL()
-	db, err := connectToDB(dbUrl)
+	dbUrl := utils.BuildDatabaseURL()
+	db, err := utils.ConnectToDB(dbUrl)
 	if err != nil {
 		log.Fatal(err)
 	}

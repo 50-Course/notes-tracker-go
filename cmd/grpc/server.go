@@ -3,6 +3,7 @@ package grpc
 import (
 	"context"
 	"fmt"
+	"log"
 	"net"
 	"time"
 
@@ -125,20 +126,22 @@ func (s *TaskServiceServer) DeleteTask(ctx context.Context, req *api.DeleteTaskR
 
 // StartServer starts the gRPC server
 func RunGRPCServer(repo *repository.TaskRepository, port string) {
-	listen, err := net.Listen("tcp", port)
+	address := fmt.Sprintf(":%s", port)
+	listen, err := net.Listen("tcp", address)
+
+	log.Printf("[gRPC] Attempting to start gRPC server on port %s", port)
 	if err != nil {
-		fmt.Errorf("Failed to start GRPC server: %v", err)
-		return
+		log.Fatalf("[gRPC] Failed to start GRPC server on %s: %v", address, err)
 	}
 
 	server := grpc.NewServer()
 	api.RegisterTaskServiceServer(server, &TaskServiceServer{repo: repo})
 
 	reflection.Register(server)
-	fmt.Printf("Starting gRPC server on %s\n", port)
-	fmt.Printf("gRPC server started on port %s\n", port)
 
+	fmt.Printf("[gRPC] Starting gRPC server on %s\n", address)
 	if err := server.Serve(listen); err != nil {
-		fmt.Printf("Failed to start GRPC server: %v", err)
+		fmt.Printf("[gRPC] Failed to start GRPC server: %v", err)
 	}
+	fmt.Printf("gRPC server started on port %s\n", port)
 }

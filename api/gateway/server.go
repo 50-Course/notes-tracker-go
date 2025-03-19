@@ -371,11 +371,20 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	grpcAddress, addrExists := os.LookupEnv("INTERNAL_SERVER_ADDRESS")
+	// grpcAddress, addrExists := os.LookupEnv("INTERNAL_SERVER_ADDRESS")
+	grpcServerHost, hostExists := os.LookupEnv("GRPC_SERVER_HOST")
+	grpcServerPort, rpcPortExists := os.LookupEnv("GRPC_SERVER_PORT")
 	gatewayPort, portExists := os.LookupEnv("API_GATEWAY_PORT")
 
-	if !addrExists {
-		log.Fatal("INTERNAL_SERVER_ADDRESS not set in environment")
+	// if !addrExists {
+	// 	log.Fatal("INTERNAL_SERVER_ADDRESS not set in environment")
+	// }
+	if !hostExists {
+		log.Fatal("GRPC_SERVER_HOST not set in environment")
+	}
+
+	if !rpcPortExists {
+		log.Fatal("GRPC_SERVER_PORT not set in environment")
 	}
 
 	if !portExists {
@@ -383,6 +392,7 @@ func main() {
 		gatewayPort = "8080"
 	}
 
+	grpcAddress := fmt.Sprintf("%s:%s", grpcServerHost, grpcServerPort)
 	gateway, err := NewGateway(grpcAddress)
 	if err != nil {
 		log.Fatalf("Failed to start API Gateway: %v", err)
