@@ -62,7 +62,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Task"
+                            "$ref": "#/definitions/models.TaskRequest"
                         }
                     }
                 ],
@@ -70,7 +70,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/models.Task"
+                            "$ref": "#/definitions/models.TaskResponse"
                         }
                     },
                     "400": {
@@ -111,7 +111,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Task"
+                            "$ref": "#/definitions/models.TaskResponse"
                         }
                     },
                     "404": {
@@ -151,7 +151,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Task"
+                            "$ref": "#/definitions/models.TaskRequest"
                         }
                     }
                 ],
@@ -159,7 +159,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Task"
+                            "$ref": "#/definitions/models.TaskResponse"
                         }
                     },
                     "400": {
@@ -239,6 +239,44 @@ const docTemplate = `{
                 "updatedAt": {
                     "type": "string",
                     "format": "date-time"
+                }
+            }
+        },
+        "models.TaskRequest": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "example": "Milk, Bread, Eggs"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Buy groceries"
+                }
+            }
+        },
+        "models.TaskResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string",
+                    "example": "2025-03-19T08:58:10.605Z"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "Milk, Bread, Eggs"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Buy groceries"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2025-03-19T08:58:10.605Z"
                 }
             }
         }
