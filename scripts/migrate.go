@@ -7,7 +7,10 @@ import (
 	"github.com/50-Course/notes-tracker/shared/models"
 	"github.com/50-Course/notes-tracker/shared/utils"
 	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 	"github.com/uptrace/bun"
+	_ "github.com/uptrace/bun/dialect/pgdialect"
+	_ "github.com/uptrace/bun/driver/pgdriver"
 )
 
 // Heavily inspired by Django's makemigrations command
