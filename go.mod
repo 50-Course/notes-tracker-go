@@ -13,6 +13,8 @@ require (
 	github.com/uptrace/bun/driver/pgdriver v1.2.11
 	github.com/uptrace/bun/extra/bundebug v1.2.11
 	github.com/uptrace/bunrouter v1.0.22
+	go.opentelemetry.io/otel v1.34.0
+	go.opentelemetry.io/otel/sdk v1.34.0
 	google.golang.org/grpc v1.71.0
 	google.golang.org/protobuf v1.36.5
 )
@@ -20,6 +22,8 @@ require (
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/fatih/color v1.18.0 // indirect
+	github.com/go-logr/logr v1.4.2 // indirect
+	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-openapi/jsonpointer v0.21.1 // indirect
 	github.com/go-openapi/jsonreference v0.21.0 // indirect
 	github.com/go-openapi/spec v0.21.0 // indirect
@@ -34,7 +38,8 @@ require (
 	github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc // indirect
 	github.com/vmihailenco/msgpack/v5 v5.4.1 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
-	go.opentelemetry.io/otel v1.34.0 // indirect
+	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
+	go.opentelemetry.io/otel/metric v1.34.0 // indirect
 	go.opentelemetry.io/otel/trace v1.34.0 // indirect
 	golang.org/x/crypto v0.36.0 // indirect
 	golang.org/x/net v0.37.0 // indirect
