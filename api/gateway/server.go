@@ -14,6 +14,7 @@ import (
 	"google.golang.org/grpc"
 
 	_ "github.com/50-Course/notes-tracker/docs"
+	"github.com/50-Course/notes-tracker/shared/models"
 	api "github.com/50-Course/notes-tracker/shared/proto"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
@@ -115,8 +116,8 @@ func (g *Gateway) ListTasksHandler(w http.ResponseWriter, req bunrouter.Request)
 //	@Tags			tasks
 //	@Accept			json
 //	@Produce		json
-//	@Param			request	body		models.Task	true	"Task payload"
-//	@Success		201		{object}	models.Task
+//	@Param			request	body		models.TaskRequest	true	"Task payload"
+//	@Success		201		{object}	models.TaskResponse
 //	@Failure		400		{object}	map[string]string
 //	@Router			/tasks [post]
 func (g *Gateway) CreateTaskHandler(w http.ResponseWriter, req bunrouter.Request) error {
@@ -149,8 +150,29 @@ func (g *Gateway) CreateTaskHandler(w http.ResponseWriter, req bunrouter.Request
 		})
 	}
 
+	// let's serialize our response with "data" field and "message" field
+	taskResponseData := models.TaskResponse{
+		ID:          resp.Task.Id,
+		Title:       resp.Task.Title,
+		Description: resp.Task.Description,
+		CreatedAt:   resp.Task.CreatedAt,
+		UpdatedAt:   resp.Task.UpdatedAt,
+	}
+
+	// our output serializer
+	responseSerializer := bunrouter.H{
+		"message": "Task created successfully",
+		"data": map[string]interface{}{
+			"id":          taskResponseData.ID,
+			"title":       taskResponseData.Title,
+			"description": taskResponseData.Description,
+			"created_at":  taskResponseData.CreatedAt,
+			"updated_at":  taskResponseData.UpdatedAt,
+		},
+	}
+
 	w.WriteHeader(http.StatusCreated)
-	return bunrouter.JSON(w, resp)
+	return bunrouter.JSON(w, responseSerializer)
 }
 
 // Handles the request to get a task by ID
@@ -182,7 +204,7 @@ func (g *Gateway) CreateTaskHandler(w http.ResponseWriter, req bunrouter.Request
 // @Accept			json
 // @Produce		json
 // @Param			id	path		string	true	"Task ID"
-// @Success		200	{object}	models.Task
+// @Success		200	{object}	models.TaskResponse
 // @Failure		404	{object}	map[string]string
 // @Router			/tasks/{id} [get]
 func (g *Gateway) GetTaskHandler(w http.ResponseWriter, req bunrouter.Request) error {
@@ -227,8 +249,8 @@ func (g *Gateway) GetTaskHandler(w http.ResponseWriter, req bunrouter.Request) e
 //	@Accept			json
 //	@Produce		json
 //	@Param			id		path		string		true	"Task ID"
-//	@Param			request	body		models.Task	true	"Updated Task Data"
-//	@Success		200		{object}	models.Task
+//	@Param			request	body		models.TaskRequest	true	"Updated Task Data"
+//	@Success		200		{object}	models.TaskResponse
 //	@Failure		400		{object}	map[string]string
 //	@Failure		404		{object}	map[string]string
 //	@Router			/tasks/{id} [put]
